@@ -24,6 +24,7 @@
 		A0177B002C7CD004005051A9 /* NoteDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0177AFF2C7CD004005051A9 /* NoteDetailModel.swift */; };
 		A08D6C402D1BB6D600ACDE03 /* NoteListModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08D6C3F2D1BB6D600ACDE03 /* NoteListModelProtocol.swift */; };
 		A0BE1C112CA58CE000706CA8 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE1C102CA58CE000706CA8 /* Note.swift */; };
+		A0CB38FE2D415A1700075362 /* URL+Notes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CB38FD2D415A1700075362 /* URL+Notes.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		A0177AFF2C7CD004005051A9 /* NoteDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailModel.swift; sourceTree = "<group>"; };
 		A08D6C3F2D1BB6D600ACDE03 /* NoteListModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListModelProtocol.swift; sourceTree = "<group>"; };
 		A0BE1C102CA58CE000706CA8 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		A0CB38FD2D415A1700075362 /* URL+Notes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Notes.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				A0177AC02C6BFD23005051A9 /* Assets.xcassets */,
 				A0177AC22C6BFD23005051A9 /* LaunchScreen.storyboard */,
 				A0177AC52C6BFD23005051A9 /* Info.plist */,
+				A0CB38FD2D415A1700075362 /* URL+Notes.swift */,
 			);
 			path = MyNotes;
 			sourceTree = "<group>";
@@ -243,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A08D6C402D1BB6D600ACDE03 /* NoteListModelProtocol.swift in Sources */,
+				A0CB38FE2D415A1700075362 /* URL+Notes.swift in Sources */,
 				A0177ACD2C6CA526005051A9 /* NotesListView.swift in Sources */,
 				A0177AFB2C75F931005051A9 /* NoteListModel.swift in Sources */,
 				A0177ABC2C6BFD21005051A9 /* NotesListController.swift in Sources */,

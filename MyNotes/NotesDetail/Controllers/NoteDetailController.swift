@@ -69,8 +69,7 @@ final class NoteDetailController: UIViewController {
 extension NoteDetailController: NoteDetailControllerProtocol {
     
     func didChange(text: String) {
-        let id = model.note.id
-        delegate?.didEditTextNote(with: id, newText: text)
+        delegate?.didEditTextNote(with: model.note.id, newText: text)
     }
     
     func didBeginEditing() {
@@ -95,9 +94,25 @@ extension NoteDetailController: NoteDetailControllerProtocol {
 
 //MARK: - UIImagePickerController methods
 
-extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {//тут посмотреть asset, assetResources
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true) //убрал выше что бы закрыть picker если сработает return
+        
+        if let seectedImage = info[.originalImage] as? UIImage, let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
+            let assetResources = PHAssetResource.assetResources(for: asset)
+            guard let fileName = assetResources.first?.originalFilename else { return } // Модет лучше вложенный if сделать без return
+            
+            do {
+                try saveInNoteDirectory(image: seectedImage, with: fileName)//try??
+            } catch {
+                print("Картинка не сохранена в каталог") //тут как обрабатваем?
+            }
+        }
+        
+        
+        
+        
         picker.dismiss(animated: true)
     }
     
@@ -171,6 +186,15 @@ private extension NoteDetailController {
         default:
             print("Неизвестный статус авторизации.")
         }
+    }
+    
+    func saveInNoteDirectory(image: UIImage, with name: String) throws {//посмотреть порядок кода и пробелы // посмотреть throws
+        let noteURL = URL.noteDirectory(for: model.note.id)
+        try FileManager.default.createDirectory(at: noteURL, withIntermediateDirectories: true)// обработать catch?do?
+        
+        let imageURL = noteURL.appending(path: name)
+        guard let data = image.pngData() else { return }
+        try data.write(to: imageURL) // обработать catch?do?
     }
     
 }
