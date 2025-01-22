@@ -14,6 +14,6 @@ protocol NoteListModelProtocol {
     func createNote() -> Note
     func deleteNote(with id: String)
     func editTextNote(with id: String, newText: String)
-    func addToNote(image name: String, note id: String) -> Note? // может не нужно возвращать. подумать!
+    func addToNote(imageName: String, note id: String) -> Note? // может не нужно возвращать. подумать!
     
 }

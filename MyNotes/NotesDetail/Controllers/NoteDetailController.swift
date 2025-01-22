@@ -20,7 +20,7 @@ protocol NoteDetailControllerProtocol: AnyObject {
 protocol NoteDetailControllerDelegate: AnyObject {
     
     func didEditTextNote(with id: String, newText: String)
-    func didAddIToNote(image name: String, note id: String) -> Note?
+    func didAddToNote(imageName: String, note id: String) -> Note?
     
 }
 
@@ -46,7 +46,7 @@ final class NoteDetailController: UIViewController {
         self.navigationItem.largeTitleDisplayMode = .never
         setupView()
         
-        contentView.setText(text: model.note.text)
+        contentView.setText(text: model.note.text)// наверно снести. Model передается в view через makeContentVie->setupView
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -110,7 +110,7 @@ extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationCon
                 print("Картинка не сохранена в каталог") //тут как обрабатваем?
             }
             
-            let note = delegate?.didAddIToNote(image: fileName, note: model.note.id)
+            let note = delegate?.didAddToNote(imageName: fileName, note: model.note.id)
         }
         
         picker.dismiss(animated: true)
@@ -137,8 +137,8 @@ private extension NoteDetailController {
         ])
     }
     
-    func makeContentView() -> NoteDetailViewProtocol {
-        let view = NoteDetailView(controller: self)
+    func makeContentView() -> NoteDetailViewProtocol {//viewModel не опционал и его пришлось добавить в аргумент. Норм?
+        let view = NoteDetailView(viewModel: NoteDetailView.ViewModel(note: model.note),controller: self)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }

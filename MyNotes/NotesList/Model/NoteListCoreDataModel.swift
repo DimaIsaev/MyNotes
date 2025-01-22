@@ -98,7 +98,7 @@ extension NoteListCoreDataModel: NoteListModelProtocol {
         saveContext()
     }
     
-    func addToNote(image name: String, note id: String) -> Note? { // может не нужно возвращать. подумать!
+    func addToNote(imageName: String, note id: String) -> Note? { // может не нужно возвращать. подумать!
         let request: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         guard let notes = try? viewContext.fetch(request),
               let note = notes.first(where: {$0.id == id}) else { return nil } // может не нужно возвращать. подумать!
@@ -107,7 +107,7 @@ extension NoteListCoreDataModel: NoteListModelProtocol {
             note.fileNames = []
         }
         
-        note.fileNames?.append(name)
+        note.fileNames?.append(imageName)
         note.date = Date()
         
         saveContext()

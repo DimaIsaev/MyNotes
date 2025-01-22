@@ -23,7 +23,7 @@ final class NotesListView: UIView {
     private lazy var addButton: UIButton = makeAddButton()
     
     private var viewModel: ViewModel? // private?
-    
+    //пробел убрать?
     private weak var controller: NotesListViewInteractionProtocol? // private?
     
     init(controller: NotesListViewInteractionProtocol) {

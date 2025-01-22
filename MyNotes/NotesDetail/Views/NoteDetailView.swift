@@ -69,13 +69,20 @@ final class NoteDetailView: UIView {
         }
     }
     
+    struct ViewModel { //норм выход? Я так понимаю для коллекции только через viewModel?
+        let note: Note
+    }
+    
     private lazy var textView: UITextView = makeTextView()
     private lazy var toolButtonsStack: UIStackView = makeToolButtonsStack() //Добавлен стек Tool кнопок (посмотреть нейминги)
     private lazy var addButtonsStack: UIStackView = makeAddButtonsStack() //Добавлен стек Add кнопок (посмотреть нейминги)
     
+    private var viewModel: ViewModel//опционал убрал
+    //пробел убрать?
     private var controller: NoteDetailControllerProtocol // private?
     
-    init(controller: NoteDetailControllerProtocol) {
+    init(viewModel: ViewModel, controller: NoteDetailControllerProtocol) {//viewModel не опционал и его пришлось добавить в аргумент
+        self.viewModel = viewModel //viewModel не опционал и его пришлось добавить в аргумент
         self.controller = controller
         super.init(frame: .zero)
         setupLoyaut()
