@@ -20,6 +20,7 @@ protocol NoteDetailControllerProtocol: AnyObject {
 protocol NoteDetailControllerDelegate: AnyObject {
     
     func didEditTextNote(with id: String, newText: String)
+    func didAddIToNote(image name: String, note id: String) -> Note?
     
 }
 
@@ -108,10 +109,9 @@ extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationCon
             } catch {
                 print("Картинка не сохранена в каталог") //тут как обрабатваем?
             }
+            
+            let note = delegate?.didAddIToNote(image: fileName, note: model.note.id)
         }
-        
-        
-        
         
         picker.dismiss(animated: true)
     }

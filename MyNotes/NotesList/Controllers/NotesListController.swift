@@ -98,6 +98,11 @@ extension NotesListController: NoteDetailControllerDelegate {
         model.editTextNote(with: id, newText: newText)
     }
     
+    func didAddIToNote(image name: String, note id: String) -> Note? { // может не нужно возвращать. подумать!
+        let note = model.addToNote(image: name, note: id)
+        return note // может не нужно возвращать. подумать!
+    }
+    
 }
 
 // MARK: - UI Elements
