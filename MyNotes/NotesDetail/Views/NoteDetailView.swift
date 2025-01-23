@@ -76,6 +76,7 @@ final class NoteDetailView: UIView {
     private lazy var textView: UITextView = makeTextView()
     private lazy var toolButtonsStack: UIStackView = makeToolButtonsStack() //Добавлен стек Tool кнопок (посмотреть нейминги)
     private lazy var addButtonsStack: UIStackView = makeAddButtonsStack() //Добавлен стек Add кнопок (посмотреть нейминги)
+    private lazy var imageCollectionView: UICollectionView = makeImageCollectionView()
     
     private var viewModel: ViewModel//опционал убрал
     //пробел убрать?
@@ -134,6 +135,22 @@ extension NoteDetailView: UITextViewDelegate {
     
 }
 
+extension NoteDetailView: UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.note.fileNames?.count ?? 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        if let cell = cell as? ImageCell {
+            cell.setCell(image: <#T##UIImage#>)
+        }
+        return cell
+    }
+    
+}
+
 // MARK: - Протокол View
 
 extension NoteDetailView: NoteDetailViewProtocol {
@@ -176,7 +193,8 @@ private extension NoteDetailView {
     func setupLoyaut() { // добавление toolButtonsStack и addButtonsStack на view. И их NSLayoutConstraint
         addSubview(textView)
         addSubview(toolButtonsStack)
-        addSubview(addButtonsStack)
+        addSubview(imageCollectionView)
+        addSubview(addButtonsStack)// тут сделал меню над collectionView по другому можно очередность сделать?
         
         NSLayoutConstraint.activate([
             textView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
@@ -191,6 +209,11 @@ private extension NoteDetailView {
             addButtonsStack.bottomAnchor.constraint(equalTo: toolButtonsStack.topAnchor, constant: -15),
             addButtonsStack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -20),
             addButtonsStack.widthAnchor.constraint(equalToConstant: 255),// ширину на глаз фиксировал
+            
+            imageCollectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            imageCollectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            imageCollectionView.bottomAnchor.constraint(equalTo: toolButtonsStack.topAnchor, constant: -15),
+            imageCollectionView.heightAnchor.constraint(equalToConstant: 115),//изменить по контенту?
         ])
     }
     
@@ -342,6 +365,21 @@ private extension NoteDetailView {
         vStack.setCustomSpacing(0, after: vStack.arrangedSubviews[2]) //убрать тонкий разделитель получилось только так
         
         return vStack
+    }
+    
+    func makeImageCollectionView() -> UICollectionView {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 100, height: 100)// может лучше можно?
+        layout.minimumLineSpacing = 5
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.showsHorizontalScrollIndicator = true
+        collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        return collectionView
     }
     
 }

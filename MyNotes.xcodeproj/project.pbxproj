@@ -25,6 +25,7 @@
 		A08D6C402D1BB6D600ACDE03 /* NoteListModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08D6C3F2D1BB6D600ACDE03 /* NoteListModelProtocol.swift */; };
 		A0BE1C112CA58CE000706CA8 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE1C102CA58CE000706CA8 /* Note.swift */; };
 		A0CB38FE2D415A1700075362 /* URL+Notes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CB38FD2D415A1700075362 /* URL+Notes.swift */; };
+		A0CB39002D42ECAB00075362 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CB38FF2D42ECAB00075362 /* ImageCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		A08D6C3F2D1BB6D600ACDE03 /* NoteListModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListModelProtocol.swift; sourceTree = "<group>"; };
 		A0BE1C102CA58CE000706CA8 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		A0CB38FD2D415A1700075362 /* URL+Notes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Notes.swift"; sourceTree = "<group>"; };
+		A0CB38FF2D42ECAB00075362 /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +165,7 @@
 			isa = PBXGroup;
 			children = (
 				A0177AF72C72543E005051A9 /* NoteDetailView.swift */,
+				A0CB38FF2D42ECAB00075362 /* ImageCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -251,6 +254,7 @@
 				A0177AFB2C75F931005051A9 /* NoteListModel.swift in Sources */,
 				A0177ABC2C6BFD21005051A9 /* NotesListController.swift in Sources */,
 				A0044B152D020D8400EB1C8F /* NoteEntity+CoreDataProperties.swift in Sources */,
+				A0CB39002D42ECAB00075362 /* ImageCell.swift in Sources */,
 				A0177AF32C6E14E6005051A9 /* NoteCell.swift in Sources */,
 				A0177AB82C6BFD21005051A9 /* AppDelegate.swift in Sources */,
 				A0044B112D020D2600EB1C8F /* MyNotes.xcdatamodeld in Sources */,
