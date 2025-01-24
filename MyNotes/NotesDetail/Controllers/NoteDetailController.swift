@@ -41,12 +41,10 @@ final class NoteDetailController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
+    override func viewDidLoad() {// тут не ставил ставить updateViewModel. Model передается в view через makeContentVie->setupView
         super.viewDidLoad()
         self.navigationItem.largeTitleDisplayMode = .never
         setupView()
-        
-        contentView.setText(text: model.note.text)// наверно снести. Model передается в view через makeContentVie->setupView
     }
     
     override func viewDidAppear(_ animated: Bool) {

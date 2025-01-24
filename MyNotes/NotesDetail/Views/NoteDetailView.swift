@@ -9,7 +9,7 @@ import UIKit
 
 protocol NoteDetailViewProtocol: UIView {
     
-    func setText(text: String?)
+    func update(for viewModel: NoteDetailView.ViewModel)//вместе setText теперь update viewModel
     func hideAddFileMenu(value: Bool) //имя? Аргумент может на status поменять?
     
     func startTextViewListening()
@@ -144,7 +144,7 @@ extension NoteDetailView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
         if let cell = cell as? ImageCell {
-            cell.setCell(image: <#T##UIImage#>)
+//            cell.setCell(image: <#T##UIImage#>)
         }
         return cell
     }
@@ -155,21 +155,15 @@ extension NoteDetailView: UICollectionViewDataSource, UICollectionViewDelegate {
 
 extension NoteDetailView: NoteDetailViewProtocol {
     
-    func setText(text: String?) {
-        let textCombination = NSMutableAttributedString()
+    func update(for viewModel: NoteDetailView.ViewModel) {
+        self.viewModel = viewModel
+        imageCollectionView.reloadData()
         
-        if let text = text {
-            let title = makeTitle(with: text)
-            
-            if let detailText = makeDetailText(with: text) {
-                textCombination.append(title)
-                textCombination.append(NSAttributedString(string: "\n"))
-                textCombination.append(detailText)
-            } else {
-                textCombination.append(title)
-            }
+        if viewModel.note.fileNames == nil {//нуно подумать куда убрать?
+            imageCollectionView.isHidden = true
+        } else {
+            imageCollectionView.isHidden = false
         }
-        textView.attributedText = textCombination
     }
     
     func hideAddFileMenu(value: Bool) { //тоже глянь в целом
@@ -223,12 +217,26 @@ private extension NoteDetailView {
         textView.backgroundColor = .black
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.autocorrectionType = .no
-        
+        textView.attributedText = makeAttributedText()
         return textView
     }
-    
-    func makeTitle(with text: String) -> NSAttributedString {
+    //SetText больше нет. Так как модель буду update(тить). Заменил на makeAttributedText и сразу добавляю его в textView через функцию. Возможно нижние три функции можно объеденить? Возможно убрать из extention UIElement
+    func makeAttributedText() -> NSMutableAttributedString { //убрать в одленый extention? Это же врое не UIElement
+        let textCombination = NSMutableAttributedString()
+        let title = makeTitle(with: viewModel.note.text)
         
+        if let detailText = makeDetailText(with: viewModel.note.text) {
+            textCombination.append(title)
+            textCombination.append(NSAttributedString(string: "\n"))
+            textCombination.append(detailText)
+        } else {
+            textCombination.append(title)
+        }
+        
+        return textCombination
+    }
+    
+    func makeTitle(with text: String) -> NSAttributedString { //убрать в одленый extention? Это же врое не UIElement
         let start = text.startIndex
         let end = text.firstIndex(of: "\n") ?? text.endIndex
         let titleSubstring = text[start..<end]
@@ -239,8 +247,7 @@ private extension NoteDetailView {
         return NSAttributedString(string: String(titleSubstring), attributes: attributeForTitle)
     }
     
-    func makeDetailText(with text: String) -> NSAttributedString? {
-        
+    func makeDetailText(with text: String) -> NSAttributedString? { //убрать в одленый extention? Это же врое не UIElement
         if let index = text.firstIndex(of: "\n") {
             let startIndex = text.index(after: index)
             let endIndex = text.endIndex
