@@ -71,6 +71,7 @@ final class NoteDetailView: UIView {
     
     struct ViewModel { //норм выход? Я так понимаю для коллекции только через viewModel?
         let note: Note
+        var displayedImages: [UIImage]? //var, optional?
     }
     
     private lazy var textView: UITextView = makeTextView()
@@ -135,16 +136,18 @@ extension NoteDetailView: UITextViewDelegate {
     
 }
 
+// MARK: - СollectionView Methods
+
 extension NoteDetailView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.note.fileNames?.count ?? 0
+        return viewModel.displayedImages?.count ?? 0 //не оч, что пользуюсь не данными модели
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        if let cell = cell as? ImageCell {
-//            cell.setCell(image: <#T##UIImage#>)
+        if let cell = cell as? ImageCell, let image = viewModel.displayedImages?[indexPath.row] {//опять не пользуюсь данными модели
+            cell.setCell(image: image)//может лучше по имени запросить и пусть это делает view или controller? уйти от бреда в viewModel?
         }
         return cell
     }
@@ -159,7 +162,7 @@ extension NoteDetailView: NoteDetailViewProtocol {
         self.viewModel = viewModel
         imageCollectionView.reloadData()
         
-        if viewModel.note.fileNames == nil {//нуно подумать куда убрать?
+        if viewModel.note.fileNames == nil {//нуно подумать куда убрать? не работает
             imageCollectionView.isHidden = true
         } else {
             imageCollectionView.isHidden = false

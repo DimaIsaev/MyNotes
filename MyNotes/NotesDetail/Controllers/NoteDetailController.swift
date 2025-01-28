@@ -98,17 +98,19 @@ extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationCon
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true) //убрал выше что бы закрыть picker если сработает return
         
-        if let seectedImage = info[.originalImage] as? UIImage, let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
+        if let selectedImage = info[.originalImage] as? UIImage, let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
             let assetResources = PHAssetResource.assetResources(for: asset)
             guard let fileName = assetResources.first?.originalFilename else { return } // Модет лучше вложенный if сделать без return
             
             do {
-                try saveInNoteDirectory(image: seectedImage, with: fileName)//try??
+                try saveInNoteDirectory(image: selectedImage, with: fileName)//try??
             } catch {
                 print("Картинка не сохранена в каталог") //тут как обрабатваем?
             }
-            
-            let note = delegate?.didAddToNote(imageName: fileName, note: model.note.id)
+            //наеврно можно не возвращать note. Пришлось обновлять model. update всех картинок, а добавляю одну. Если одну то много кода. Можно убрать в отдельную функцию. Не нравиться, что обновляем всю viewModel
+            guard let note = delegate?.didAddToNote(imageName: fileName, note: model.note.id) else { return }
+            model.update(note: note)
+            contentView.update(for: NoteDetailView.ViewModel(note: note, displayedImages: giveImageArray()))//model.note
         }
         
         picker.dismiss(animated: true)
@@ -136,7 +138,7 @@ private extension NoteDetailController {
     }
     
     func makeContentView() -> NoteDetailViewProtocol {//viewModel не опционал и его пришлось добавить в аргумент. Норм?
-        let view = NoteDetailView(viewModel: NoteDetailView.ViewModel(note: model.note),controller: self)
+        let view = NoteDetailView(viewModel: NoteDetailView.ViewModel(note: model.note, displayedImages: giveImageArray()),controller: self) //пришлось сюда тоже картинки добавлять
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }
@@ -193,6 +195,25 @@ private extension NoteDetailController {
         let imageURL = noteURL.appending(path: name)
         guard let data = image.pngData() else { return }
         try data.write(to: imageURL) // обработать catch?do?
+    }
+    
+    func giveImageArray() -> [UIImage]? { //ну и тут сам массив картинок получаю
+        if let fileNames = model.note.fileNames {
+            var imageArray = [UIImage]()
+            for imageName in fileNames {
+                let noteId = model.note.id
+                let noteURL = URL.noteDirectory(for: noteId)
+                let picURL = noteURL.appending(path: imageName)
+                
+                if let fileData = FileManager.default.contents(atPath: picURL.path), let fileContent = UIImage(data: fileData) {
+                    imageArray.append(fileContent)
+                }
+            }
+            if !imageArray.isEmpty { // Что бы не вернул пустой массив, если будут проблемы с путём или картинкой.
+                return imageArray
+            }
+        }
+        return nil
     }
     
 }

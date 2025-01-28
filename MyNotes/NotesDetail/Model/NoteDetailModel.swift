@@ -11,7 +11,7 @@ protocol NoteDetailModelProtocol {
     
     var note: Note { get }
     
-    //    func update(note: Note) //пока не нужен, но преследить возможно нужен
+        func update(note: Note) //сносил но пришлось вернуть из-за отображаемых картинок
     
 }
 
@@ -33,8 +33,8 @@ extension NoteDetailModel: NoteDetailModelProtocol {
     
     var note: Note { storedNote }
     
-    //    func update(note: Note) {
-    //        storedNote = note
-    //    }
+        func update(note: Note) { //сносил но пришлось вернуть из-за отображаемых картинок
+            storedNote = note
+        }
     
 }
