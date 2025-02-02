@@ -98,12 +98,12 @@ extension NoteListCoreDataModel: NoteListModelProtocol {
         saveContext()
     }
     
-    func addToNote(imageName: String, note id: String) -> Note? { // может не нужно возвращать. подумать!
+    func addToNote(imageName: String, note id: String) {
         let request: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         guard let notes = try? viewContext.fetch(request),
-              let note = notes.first(where: {$0.id == id}) else { return nil } // может не нужно возвращать. подумать!
+              let note = notes.first(where: {$0.id == id}) else { return }
         
-        if note.fileNames == nil {//как упростить?
+        if note.fileNames == nil {//как упростить?// точно норм?
             note.fileNames = []
         }
         
@@ -111,7 +111,6 @@ extension NoteListCoreDataModel: NoteListModelProtocol {
         note.date = Date()
         
         saveContext()
-        return Note(text: note.text, id: note.id, date: note.date, fileNames: note.fileNames) // может не нужно возвращать. подумать!
     }
     
 }

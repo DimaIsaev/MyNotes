@@ -11,7 +11,7 @@ class ImageCell: UICollectionViewCell {
     
     private lazy var cellImageView: UIImageView = makeCellImageView()
     
-    func setCell(image: UIImage) {
+    func setCell(with image: UIImage) {
         cellImageView.image = image
         setupLayout()
     }
@@ -33,7 +33,6 @@ private extension ImageCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
         return imageView
     }
     

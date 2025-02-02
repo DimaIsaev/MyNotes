@@ -8,19 +8,25 @@
 import UIKit
 import Photos
 
-protocol NoteDetailControllerProtocol: AnyObject {
+protocol NoteDetailControllerProtocol: AnyObject { // Почему тут AnyObject. Вроде не влияет.
+    
+    func didUpdate()
+    
+}
+
+protocol NotesDetailViewInteractionProtocol: AnyObject {// Почему тут AnyObject. Вроде не влияет.
     
     func didChange(text: String)
     func didBeginEditing()
-    func didTapAddFileMenuButton(hidden: Bool) //название?
+    func didTapAddFileMenuButton()
     func didTapAddPhotoOrVideoButton()
     
 }
 
-protocol NoteDetailControllerDelegate: AnyObject {
+protocol NoteDetailControllerDelegate: AnyObject { // Почему тут AnyObject.
     
     func didEditTextNote(with id: String, newText: String)
-    func didAddToNote(imageName: String, note id: String) -> Note?
+    func didAddToNote(imageName: String, note id: String)
     
 }
 
@@ -28,9 +34,9 @@ final class NoteDetailController: UIViewController {
     
     private lazy var contentView: NoteDetailViewProtocol = makeContentView()
     
-    weak var delegate: NoteDetailControllerDelegate?
+    weak var delegate: NoteDetailControllerDelegate?//может убрать опционал?
     
-    private var model: NoteDetailModelProtocol // private?
+    private var model: NoteDetailModelProtocol
     
     init(model: NoteDetailModelProtocol) {
         self.model = model
@@ -41,7 +47,7 @@ final class NoteDetailController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {// тут не ставил ставить updateViewModel. Model передается в view через makeContentVie->setupView
+    override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.largeTitleDisplayMode = .never
         setupView()
@@ -63,9 +69,19 @@ final class NoteDetailController: UIViewController {
     
 }
 
-// MARK: - Протокол контроллера
+// MARK: - Протокол контроллера cвязанный с событиями в модели
 
 extension NoteDetailController: NoteDetailControllerProtocol {
+    
+    func didUpdate() {
+        contentView.update(for: NoteDetailViewModel(note: model.note))
+    }
+    
+}
+
+//MARK: - Протокол контроллера связаный с взаимодействием пользователя во View
+
+extension NoteDetailController: NotesDetailViewInteractionProtocol {
     
     func didChange(text: String) {
         delegate?.didEditTextNote(with: model.note.id, newText: text)
@@ -75,45 +91,38 @@ extension NoteDetailController: NoteDetailControllerProtocol {
         setupNavigationBarItem()
     }
     
-    func didTapAddFileMenuButton(hidden: Bool) {//название?. и аргумент hidden?
-        if hidden {
-            contentView.hideAddFileMenu(value: false)
-        } else {
-            contentView.hideAddFileMenu(value: true)
-        }
+    func didTapAddFileMenuButton() {
+        contentView.toggleAddFileMenu()
     }
     
     func didTapAddPhotoOrVideoButton() { //посмотреть порядок кода и в целом глянуть
-        contentView.hideAddFileMenu(value: true)
+        contentView.toggleAddFileMenu()
         showImagePickerController()
-        requestPhotoLibraryAccess()
+        requestPhotoLibraryAccess() //может вложить проверку в ImagePickerController
     }
     
 }
 
 //MARK: - UIImagePickerController methods
 
-extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {//тут посмотреть asset, assetResources
+extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true) //убрал выше что бы закрыть picker если сработает return
+        picker.dismiss(animated: true)
         
         if let selectedImage = info[.originalImage] as? UIImage, let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
             let assetResources = PHAssetResource.assetResources(for: asset)
-            guard let fileName = assetResources.first?.originalFilename else { return } // Модет лучше вложенный if сделать без return
+            guard let fileName = assetResources.first?.originalFilename else { return }
             
             do {
-                try saveInNoteDirectory(image: selectedImage, with: fileName)//try??
+                try saveInNoteDirectory(image: selectedImage, with: fileName)
             } catch {
-                print("Картинка не сохранена в каталог") //тут как обрабатваем?
+                print("Картинка не сохранена в каталог")
             }
-            //наеврно можно не возвращать note. Пришлось обновлять model. update всех картинок, а добавляю одну. Если одну то много кода. Можно убрать в отдельную функцию. Не нравиться, что обновляем всю viewModel
-            guard let note = delegate?.didAddToNote(imageName: fileName, note: model.note.id) else { return }
-            model.update(note: note)
-            contentView.update(for: NoteDetailView.ViewModel(note: note, displayedImages: giveImageArray()))//model.note
+            
+            delegate?.didAddToNote(imageName: fileName, note: model.note.id)
+            model.addFile(name: fileName)
         }
-        
-        picker.dismiss(animated: true)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -137,8 +146,8 @@ private extension NoteDetailController {
         ])
     }
     
-    func makeContentView() -> NoteDetailViewProtocol {//viewModel не опционал и его пришлось добавить в аргумент. Норм?
-        let view = NoteDetailView(viewModel: NoteDetailView.ViewModel(note: model.note, displayedImages: giveImageArray()),controller: self) //пришлось сюда тоже картинки добавлять
+    func makeContentView() -> NoteDetailViewProtocol {
+        let view = NoteDetailView(viewModel: NoteDetailViewModel(note: model.note), controller: self)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }
@@ -148,7 +157,7 @@ private extension NoteDetailController {
         navigationItem.titleView?.tintColor = .systemOrange
     }
     
-    @objc func dismissKeyboard() {
+    @objc func dismissKeyboard() {//где его место?
         view.endEditing(true)
     }
     
@@ -158,18 +167,18 @@ private extension NoteDetailController {
 
 private extension NoteDetailController {
     
-    func showImagePickerController() { // 1)можно не вызывать отдельной функцией. 2) Как вариант убрать в extention UI Elements
+    func showImagePickerController() { // Как вариант убрать в extention UI Elements, Является UIElement?
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
         self.present(imagePickerController, animated: true)
     }
     
-    func requestPhotoLibraryAccess() { //возможно просто оставить пустые {} requestAuthorization если не надо обрабатывать или break
+    func requestPhotoLibraryAccess() {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         switch status {
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization(for: PHAccessLevel.readWrite) { newStatus in
-                if newStatus == .authorized {// можно вообще убрать
+                if newStatus == .authorized {
                     print("Доступ предоставлен.")
                 } else {
                     print("Доступ запрещен.")
@@ -180,7 +189,7 @@ private extension NoteDetailController {
         case .denied:
             print("Досуп запрещен.")
         case .authorized:
-            print("Доступ уже предоставлен.")//тут можно везде break поставить
+            print("Доступ уже предоставлен.")
         case .limited:
             print("Доступ ограничен.")
         default:
@@ -188,32 +197,13 @@ private extension NoteDetailController {
         }
     }
     
-    func saveInNoteDirectory(image: UIImage, with name: String) throws {//посмотреть порядок кода и пробелы // посмотреть throws
+    func saveInNoteDirectory(image: UIImage, with name: String) throws {
         let noteURL = URL.noteDirectory(for: model.note.id)
-        try FileManager.default.createDirectory(at: noteURL, withIntermediateDirectories: true)// обработать catch?do?
+        try FileManager.default.createDirectory(at: noteURL, withIntermediateDirectories: true)
         
         let imageURL = noteURL.appending(path: name)
         guard let data = image.pngData() else { return }
-        try data.write(to: imageURL) // обработать catch?do?
-    }
-    
-    func giveImageArray() -> [UIImage]? { //ну и тут сам массив картинок получаю
-        if let fileNames = model.note.fileNames {
-            var imageArray = [UIImage]()
-            for imageName in fileNames {
-                let noteId = model.note.id
-                let noteURL = URL.noteDirectory(for: noteId)
-                let picURL = noteURL.appending(path: imageName)
-                
-                if let fileData = FileManager.default.contents(atPath: picURL.path), let fileContent = UIImage(data: fileData) {
-                    imageArray.append(fileContent)
-                }
-            }
-            if !imageArray.isEmpty { // Что бы не вернул пустой массив, если будут проблемы с путём или картинкой.
-                return imageArray
-            }
-        }
-        return nil
+        try data.write(to: imageURL)
     }
     
 }

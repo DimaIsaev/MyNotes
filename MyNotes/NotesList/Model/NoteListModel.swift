@@ -57,23 +57,20 @@ extension NoteListModel: NoteListModelProtocol {
         }
     }
     
-    func addToNote(imageName: String, note id: String) -> Note? { // может не нужно возвращать. подумать!
+    func addToNote(imageName: String, note id: String) {
         for (index, note) in storedNotes.enumerated() {
             if id == note.id {
                 var note = storedNotes[index]
                 
-                if note.fileNames == nil {//как упростить?
+                if note.fileNames == nil {//как упростить?// точно норм?
                     note.fileNames = []
                 }
                 
                 note.fileNames?.append(imageName)
                 note.date = Date()
                 storedNotes[index] = note
-                
-                return note // может не нужно возвращать. подумать!
             }
         }
-        return nil // может не нужно возвращать. подумать!
     }
     
 }

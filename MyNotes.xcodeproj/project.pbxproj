@@ -22,6 +22,9 @@
 		A0177AF82C72543E005051A9 /* NoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0177AF72C72543E005051A9 /* NoteDetailView.swift */; };
 		A0177AFB2C75F931005051A9 /* NoteListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0177AFA2C75F931005051A9 /* NoteListModel.swift */; };
 		A0177B002C7CD004005051A9 /* NoteDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0177AFF2C7CD004005051A9 /* NoteDetailModel.swift */; };
+		A03FF30A2D49B31A00699CC7 /* NoteDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03FF3092D49B31A00699CC7 /* NoteDetailViewModel.swift */; };
+		A03FF30C2D49B95A00699CC7 /* NoteDetailToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03FF30B2D49B95A00699CC7 /* NoteDetailToolbar.swift */; };
+		A03FF3122D4A663A00699CC7 /* NoteDetailAddFileMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03FF3112D4A663A00699CC7 /* NoteDetailAddFileMenu.swift */; };
 		A08D6C402D1BB6D600ACDE03 /* NoteListModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08D6C3F2D1BB6D600ACDE03 /* NoteListModelProtocol.swift */; };
 		A0BE1C112CA58CE000706CA8 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE1C102CA58CE000706CA8 /* Note.swift */; };
 		A0CB38FE2D415A1700075362 /* URL+Notes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CB38FD2D415A1700075362 /* URL+Notes.swift */; };
@@ -46,6 +49,9 @@
 		A0177AF72C72543E005051A9 /* NoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailView.swift; sourceTree = "<group>"; };
 		A0177AFA2C75F931005051A9 /* NoteListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListModel.swift; sourceTree = "<group>"; };
 		A0177AFF2C7CD004005051A9 /* NoteDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailModel.swift; sourceTree = "<group>"; };
+		A03FF3092D49B31A00699CC7 /* NoteDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailViewModel.swift; sourceTree = "<group>"; };
+		A03FF30B2D49B95A00699CC7 /* NoteDetailToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailToolbar.swift; sourceTree = "<group>"; };
+		A03FF3112D4A663A00699CC7 /* NoteDetailAddFileMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailAddFileMenu.swift; sourceTree = "<group>"; };
 		A08D6C3F2D1BB6D600ACDE03 /* NoteListModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListModelProtocol.swift; sourceTree = "<group>"; };
 		A0BE1C102CA58CE000706CA8 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		A0CB38FD2D415A1700075362 /* URL+Notes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Notes.swift"; sourceTree = "<group>"; };
@@ -164,6 +170,9 @@
 		A0BE1C0E2CA41F5F00706CA8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				A03FF3092D49B31A00699CC7 /* NoteDetailViewModel.swift */,
+				A03FF30B2D49B95A00699CC7 /* NoteDetailToolbar.swift */,
+				A03FF3112D4A663A00699CC7 /* NoteDetailAddFileMenu.swift */,
 				A0177AF72C72543E005051A9 /* NoteDetailView.swift */,
 				A0CB38FF2D42ECAB00075362 /* ImageCell.swift */,
 			);
@@ -253,6 +262,8 @@
 				A0177ACD2C6CA526005051A9 /* NotesListView.swift in Sources */,
 				A0177AFB2C75F931005051A9 /* NoteListModel.swift in Sources */,
 				A0177ABC2C6BFD21005051A9 /* NotesListController.swift in Sources */,
+				A03FF30A2D49B31A00699CC7 /* NoteDetailViewModel.swift in Sources */,
+				A03FF30C2D49B95A00699CC7 /* NoteDetailToolbar.swift in Sources */,
 				A0044B152D020D8400EB1C8F /* NoteEntity+CoreDataProperties.swift in Sources */,
 				A0CB39002D42ECAB00075362 /* ImageCell.swift in Sources */,
 				A0177AF32C6E14E6005051A9 /* NoteCell.swift in Sources */,
@@ -263,6 +274,7 @@
 				A0177AF62C70C720005051A9 /* NoteDetailController.swift in Sources */,
 				A0177ABA2C6BFD21005051A9 /* SceneDelegate.swift in Sources */,
 				A0044B142D020D8400EB1C8F /* NoteEntity+CoreDataClass.swift in Sources */,
+				A03FF3122D4A663A00699CC7 /* NoteDetailAddFileMenu.swift in Sources */,
 				A0177AF82C72543E005051A9 /* NoteDetailView.swift in Sources */,
 				A0177B002C7CD004005051A9 /* NoteDetailModel.swift in Sources */,
 			);
