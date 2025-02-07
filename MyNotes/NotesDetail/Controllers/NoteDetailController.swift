@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Photos
 
 protocol NoteDetailControllerProtocol: AnyObject { // Почему тут AnyObject. Вроде не влияет.
     
@@ -20,6 +19,7 @@ protocol NotesDetailViewInteractionProtocol: AnyObject {// Почему тут A
     func didBeginEditing()
     func didTapAddFileMenuButton()
     func didTapAddPhotoOrVideoButton()
+    func didTapTakePhotoOrVideoButton()
     
 }
 
@@ -33,13 +33,17 @@ protocol NoteDetailControllerDelegate: AnyObject { // Почему тут AnyObj
 final class NoteDetailController: UIViewController {
     
     private lazy var contentView: NoteDetailViewProtocol = makeContentView()
+    private lazy var imagePickerManager: ImagePickerManager = {
+        return ImagePickerManager(viewController: self)
+    }()//manager?//Или можно через метод showImagePickerController. Но стоит создавать метод с одной строкой?
     
-    weak var delegate: NoteDetailControllerDelegate?//может убрать опционал?
+    private weak var delegate: NoteDetailControllerDelegate?//может убрать опционал? сделал private и добавил в init
     
     private var model: NoteDetailModelProtocol
     
-    init(model: NoteDetailModelProtocol) {
+    init(model: NoteDetailModelProtocol, delegate: NoteDetailControllerDelegate?) {//тут у делегата что по опционалу
         self.model = model
+        self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -75,6 +79,7 @@ extension NoteDetailController: NoteDetailControllerProtocol {
     
     func didUpdate() {
         contentView.update(for: NoteDetailViewModel(note: model.note))
+        //        delegate?.didAddToNote(imageName: model.note.fileNames!.last!, note: model.note.id) vне кажется нуно передавать в основную модель изменения данной модели
     }
     
 }
@@ -95,10 +100,14 @@ extension NoteDetailController: NotesDetailViewInteractionProtocol {
         contentView.toggleAddFileMenu()
     }
     
-    func didTapAddPhotoOrVideoButton() { //посмотреть порядок кода и в целом глянуть
+    func didTapAddPhotoOrVideoButton() {
         contentView.toggleAddFileMenu()
-        showImagePickerController()
-        requestPhotoLibraryAccess() //может вложить проверку в ImagePickerController
+        imagePickerManager.openGallery()//Сделал отдельные методы. Можно через sourcetype. Но подумал зачем знать об этом контроллеру
+    }
+    
+    func didTapTakePhotoOrVideoButton() {
+        contentView.toggleAddFileMenu()
+        imagePickerManager.openCamera()//Сделал отдельные методы. Можно через sourcetype. Но подумал зачем знать об этом контроллеру
     }
     
 }
@@ -108,21 +117,21 @@ extension NoteDetailController: NotesDetailViewInteractionProtocol {
 extension NoteDetailController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true)
-        
-        if let selectedImage = info[.originalImage] as? UIImage, let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
-            let assetResources = PHAssetResource.assetResources(for: asset)
-            guard let fileName = assetResources.first?.originalFilename else { return }
+        if let image = info[.originalImage] as? UIImage,//объедеил в один if. оба зафисят друг от друга
+           let name = imagePickerManager.fetchImageName(info: info) {
             
             do {
-                try saveInNoteDirectory(image: selectedImage, with: fileName)
+                try saveInNoteDirectory(image, with: name)
             } catch {
                 print("Картинка не сохранена в каталог")
+                return //добавил если сохранение не получилось. код дальше не имеет смысла
             }
             
-            delegate?.didAddToNote(imageName: fileName, note: model.note.id)
-            model.addFile(name: fileName)
+            delegate?.didAddToNote(imageName: name, note: model.note.id)//их место тут?или думать?
+            model.addFile(name)//их место тут?или думать?
         }
+        
+        picker.dismiss(animated: true)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -157,7 +166,7 @@ private extension NoteDetailController {
         navigationItem.titleView?.tintColor = .systemOrange
     }
     
-    @objc func dismissKeyboard() {//где его место?
+    @objc func dismissKeyboard() {//где его место? название точно норм? может TapDoneButton
         view.endEditing(true)
     }
     
@@ -167,42 +176,13 @@ private extension NoteDetailController {
 
 private extension NoteDetailController {
     
-    func showImagePickerController() { // Как вариант убрать в extention UI Elements, Является UIElement?
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        self.present(imagePickerController, animated: true)
-    }
-    
-    func requestPhotoLibraryAccess() {
-        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-        switch status {
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization(for: PHAccessLevel.readWrite) { newStatus in
-                if newStatus == .authorized {
-                    print("Доступ предоставлен.")
-                } else {
-                    print("Доступ запрещен.")
-                }
-            }
-        case .restricted:
-            print("Доступ ограничен.")
-        case .denied:
-            print("Досуп запрещен.")
-        case .authorized:
-            print("Доступ уже предоставлен.")
-        case .limited:
-            print("Доступ ограничен.")
-        default:
-            print("Неизвестный статус авторизации.")
-        }
-    }
-    
-    func saveInNoteDirectory(image: UIImage, with name: String) throws {
+    func saveInNoteDirectory(_ image: UIImage, with name: String) throws {// Аргумент _ норм? Ушел от повторений image: image
+        guard let data = image.pngData() else { return } //почему не jpeg,перенес в начало. Если не конвектируется, смысла нет.
+        //глянуть порядок кода. Вроде разделил по смыслу
         let noteURL = URL.noteDirectory(for: model.note.id)
-        try FileManager.default.createDirectory(at: noteURL, withIntermediateDirectories: true)
-        
         let imageURL = noteURL.appending(path: name)
-        guard let data = image.pngData() else { return }
+        
+        try FileManager.default.createDirectory(at: noteURL, withIntermediateDirectories: true)
         try data.write(to: imageURL)
     }
     

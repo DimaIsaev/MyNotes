@@ -69,9 +69,8 @@ extension NotesListController: NotesListViewInteractionProtocol {
     func didSelectNote(with id: String) {
         guard let note = model.notes.first(where: { $0.id == id }) else { return }
         let model = NoteDetailModel(storedNote: note)
-        let detailController = NoteDetailController(model: model)
+        let detailController = NoteDetailController(model: model, delegate: self)//тут был отдельная строка delegate = self
         model.controller = detailController
-        detailController.delegate = self
         navigationController?.pushViewController(detailController, animated: true)
     }
     
@@ -82,9 +81,8 @@ extension NotesListController: NotesListViewInteractionProtocol {
     func didTapAddBtn() {
         let note = model.createNote() //может не возвращать note. а взять заметку по model.notes.last?
         let model = NoteDetailModel(storedNote: note)
-        let detailController = NoteDetailController(model: model)
+        let detailController = NoteDetailController(model: model, delegate: self)//тут был отдельная строка delegate = self
         model.controller = detailController
-        detailController.delegate = self
         navigationController?.pushViewController(detailController, animated: true)
     }
     

@@ -11,7 +11,7 @@ protocol NoteDetailModelProtocol {
     
     var note: Note { get }
     
-    func addFile(name: String)//почему Сергей записал его не в протокол?
+    func addFile(_ name: String)//почему Сергей записал его не в протокол?
     
 }
 
@@ -37,7 +37,7 @@ extension NoteDetailModel: NoteDetailModelProtocol {
     
     var note: Note { storedNote }
     
-    func addFile(name: String) { //почему Сергей записал его не в протокол?
+    func addFile(_ name: String) { //почему Сергей записал его не в протокол?
         if storedNote.fileNames == nil {// точно норм?
             storedNote.fileNames = []
         }

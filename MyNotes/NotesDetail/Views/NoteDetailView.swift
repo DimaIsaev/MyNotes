@@ -26,7 +26,7 @@ final class NoteDetailView: UIView {
     
     private var viewModel: NoteDetailViewModel
     //пробел убрать?
-    private var controller: NotesDetailViewInteractionProtocol
+    private var controller: NotesDetailViewInteractionProtocol//weak?
     
     init(viewModel: NoteDetailViewModel, controller: NotesDetailViewInteractionProtocol) {
         self.viewModel = viewModel
@@ -199,7 +199,7 @@ private extension NoteDetailView {
                 self.controller.didTapAddPhotoOrVideoButton()
             }),
             .takePhotoOrVideo({
-                print("takePhotoOrVideo не работает")
+                self.controller.didTapTakePhotoOrVideoButton()
             }),
             .scanDocument({
                 print("scanDocument не работает")
